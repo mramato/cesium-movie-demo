@@ -1,7 +1,6 @@
 'use strict';
 
 var electron = require('electron');
-var Cesium = require('cesium');
 
 var viewer;
 var totalFrames;
@@ -14,11 +13,7 @@ function beginCapture(event, options) {
 
     viewer = new Cesium.CesiumWidget('cesiumContainer', {
         useDefaultRenderLoop: false,
-        terrainProvider: new Cesium.CesiumTerrainProvider({
-            url: 'https://assets.agi.com/stk-terrain/world',
-            requestWaterMask: true,
-            requestVertexNormals: true
-        })
+        terrainProvider: Cesium.createWorldTerrain()
     });
 
     var scene = viewer.scene;

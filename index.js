@@ -18,6 +18,9 @@ app.on('ready', function () {
     var browserWindow = new BrowserWindow({
         enableLargerThanScreen: true,
         show: false,
+        webPreferences: {
+            nodeIntegration: true
+        },
         resizable: false
     });
     browserWindow.setMenu(null);
@@ -27,16 +30,16 @@ app.on('ready', function () {
         var frame = 0;
         ipcMain.on('frameReady', function (event, arg) {
             console.log('Frame ' + ++currentFrame + ' of ' + totalFrames);
-            browserWindow.capturePage({x: 0, y: 0, width: width, height: height}, function (img) {
+            browserWindow.capturePage({x: 0, y: 0, width: width, height: height}).then(function (img) {
                 var file = outputDirectory + '/' + ("00000" + frame++).slice(-5) + '.png';
-                fsExtra.outputFile(file, img.toPng())
+                return fsExtra.outputFile(file, img.toPNG())
                     .then(function () {
                         browserWindow.webContents.send('nextFrame', {});
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                        browserWindow.close();
                     });
+            })
+            .catch(function (err) {
+                console.log(err);
+                browserWindow.close();
             });
         });
 
