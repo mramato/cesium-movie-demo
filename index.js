@@ -8,11 +8,11 @@ var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
 var ipcMain = electron.ipcMain;
 
-var width = 640;
-var height = 360;
+var width = 1280;
+var height = 720;
 var outputDirectory = 'output';
 var currentFrame = 0;
-var totalFrames = 300;
+var totalFrames = 365;
 
 app.on('ready', function () {
     var browserWindow = new BrowserWindow({
@@ -50,7 +50,7 @@ app.on('ready', function () {
                 .outputFPS(30)
                 .noAudio()
                 .videoBitrate(1024 * 20)
-                .format('avi')
+                .format('mp4')
                 .on('progress', function (progress) {
                     if (progress.timemark !== timemark) {
                         timemark = progress.timemark;
@@ -58,14 +58,14 @@ app.on('ready', function () {
                     }
                 })
                 .on('end', function () {
-                    console.log('file has been converted succesfully');
+                    console.log('file has been converted successfully');
                     browserWindow.close();
                 })
                 .on('error', function (err) {
                     console.log('an error happened: ' + err.message);
                     browserWindow.close();
                 })
-                .save('movie.avi');
+                .save('movie.mp4');
         });
 
         browserWindow.webContents.send('beginCapture', {totalFrames: totalFrames});
