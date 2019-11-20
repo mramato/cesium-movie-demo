@@ -51,6 +51,21 @@ function nextFrame() {
 
     viewer.clock.currentTime = Cesium.JulianDate.addDays(viewer.clock.currentTime, 1, viewer.clock.currentTime);
 
+    var div = document.getElementById('timestamp');
+
+    // var greg = Cesium.JulianDate.toGregorianDate(viewer.clock.currentTime);
+    // if(greg.day === 10 && greg.month === 3){
+    //     viewer.clock.currentTime = Cesium.JulianDate.addHours(viewer.clock.currentTime, 1, viewer.clock.currentTime);
+    // }
+    // if(greg.day === 3 && greg.month === 11){
+    //     viewer.clock.currentTime = Cesium.JulianDate.addHours(viewer.clock.currentTime, -1, viewer.clock.currentTime);
+    // }
+    // greg = Cesium.JulianDate.toGregorianDate(viewer.clock.currentTime);
+    // div.textContent = `${greg.year}-${greg.month}-${greg.day} 3:00pm EST`;
+
+    var greg = Cesium.JulianDate.toGregorianDate(viewer.clock.currentTime);
+    div.textContent = `${greg.year}-${greg.month}-${greg.day} ${greg.hour}:00 UTC`;    
+
     var scene = viewer.scene;
     var remove = scene.postRender.addEventListener(function () {
         var complete = _updateSceneComplete();

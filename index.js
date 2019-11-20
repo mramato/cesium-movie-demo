@@ -8,8 +8,8 @@ var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
 var ipcMain = electron.ipcMain;
 
-var width = 1280;
-var height = 720;
+var width = 1920;
+var height = 1105;
 var outputDirectory = 'output';
 var currentFrame = 0;
 var totalFrames = 365;
@@ -49,7 +49,6 @@ app.on('ready', function () {
                 .inputFPS(30)
                 .outputFPS(30)
                 .noAudio()
-                .videoBitrate(1024 * 20)
                 .format('mp4')
                 .on('progress', function (progress) {
                     if (progress.timemark !== timemark) {
@@ -59,13 +58,13 @@ app.on('ready', function () {
                 })
                 .on('end', function () {
                     console.log('file has been converted successfully');
-                    browserWindow.close();
+                   browserWindow.close();
                 })
                 .on('error', function (err) {
                     console.log('an error happened: ' + err.message);
-                    browserWindow.close();
+                   browserWindow.close();
                 })
-                .save('movie.mp4');
+                .save('nyc_365_utc.mp4');
         });
 
         browserWindow.webContents.send('beginCapture', {totalFrames: totalFrames});
