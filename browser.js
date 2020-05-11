@@ -1,68 +1,116 @@
-'use strict';
+"use strict";
 
-var electron = require('electron');
+var electron = require("electron");
 
 var viewer;
 var totalFrames;
 var currentFrame;
 var tweenCollection;
+var tilesets = [];
 
-function beginCapture(event, options) {
-    currentFrame = 0;
-    totalFrames = options.totalFrames;
 
-    viewer = new Cesium.CesiumWidget('cesiumContainer', {
-        useDefaultRenderLoop: false,
-        terrainProvider: Cesium.createWorldTerrain()
-    });
+  function beginCapture(event, options) {
+  currentFrame = 0;
+  totalFrames = options.totalFrames;
 
-    var scene = viewer.scene;
+  viewer = new Cesium.CesiumWidget("cesiumContainer", {
+    useDefaultRenderLoop: false,
+    //   terrainProvider: Cesium.createWorldTerrain()
+  });
+  viewer.useBrowserRecommendedResolution = false;
+  var scene = viewer.scene;
 
-    scene.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(-73.98580932617188, 40.74843406689482, 363.34038727246224)
-    });
+  scene.postProcessStages.fxaa.enabled = true;
 
-    var tween = Cesium.CameraFlightPath.createTween(scene, {
-        duration: totalFrames - 1,
-        destination: Cesium.Cartesian3.fromDegrees(-73.98585975679403, 40.75759944127251, 186.50838555841779),
-        heading: Cesium.Math.toRadians(200.0),
-        pitch: Cesium.Math.toRadians(-50.0),
-        roll: 0,
-        easingFunction: Cesium.EasingFunction.QUARTIC_IN_OUT
-    });
+  scene.camera.setView({
+    destination: new Cesium.Cartesian3(
+        1333016.8260117217, -4654705.764139854, 4138050.356968003
+    ),
+    orientation: {
+      heading: 1.1938950193608342,
+      pitch: -0.40519439739471186,
+      roll: 0.003359818633623668
+    },
+  });
 
-    tweenCollection = new Cesium.TweenCollection();
-    tweenCollection.add(tween);
+  var tween = Cesium.CameraFlightPath.createTween(scene, {
+    duration: totalFrames - 1,
+    destination: new Cesium.Cartesian3(
+        1334234.3970472903, -4653924.033165023, 4138472.8300507637
+    ),
+    heading: 1.6108560792554636,
+    pitch: -0.549513523795369,
+    roll: 0.0038888274125952194,
+    easingFunction: Cesium.EasingFunction.QUARTIC_IN_OUT,
+  });
 
-    nextFrame();
+  tweenCollection = new Cesium.TweenCollection();
+  tweenCollection.add(tween);
+
+  // Load the NYC buildings tileset
+  var tileset = new Cesium.Cesium3DTileset({
+    url: Cesium.IonResource.fromAssetId(14772),
+  });
+  tileset.maximumScreenSpaceError = 4;
+  viewer.scene.primitives.add(tileset);
+  tilesets.push(tileset);
+
+  nextFrame();
 }
 
 function nextFrame() {
-    if (currentFrame === totalFrames) {
-        ipcRenderer.send('done');
-        return;
+  if (currentFrame === totalFrames) {
+    ipcRenderer.send("done");
+    return;
+  }
+
+  tweenCollection.update(currentFrame++);
+  var scene = viewer.scene;
+  var remove = scene.postRender.addEventListener(function () {
+    var complete = _updateSceneComplete();
+
+    if (complete) {
+      remove();
+      ipcRenderer.send("frameReady");
+    } else {
+      setTimeout(function () {
+        viewer.resize();
+        viewer.render();
+      }, 0);
     }
+  });
+  viewer.resize();
+  viewer.render();
+}
 
-    tweenCollection.update(currentFrame++);
-    var scene = viewer.scene;
-    var remove = scene.postRender.addEventListener(function () {
-        var surface = scene.globe._surface;
-        var complete = surface.tileProvider.ready && surface._tileLoadQueueHigh.length === 0 && surface._tileLoadQueueMedium.length === 0 && surface._tileLoadQueueLow.length === 0 && surface._debug.tilesWaitingForChildren === 0;
+function _updateSceneComplete() {
+  var surface = viewer.scene.globe._surface;
 
-        if (complete) {
-            remove();
-            ipcRenderer.send('frameReady');
-        } else {
-            setTimeout(function () {
-                viewer.resize();
-                viewer.render();
-            }, 0);
-        }
-    });
-    viewer.resize();
-    viewer.render();
+  //A rather obtuse check to see if Entity geometry is complete.
+  //var entitiesComplete = viewer.clockViewModel.canAnimate;
+
+  var complete =
+    surface.tileProvider.ready &&
+    surface._tileLoadQueueHigh.length === 0 &&
+    surface._tileLoadQueueMedium.length === 0 &&
+    surface._tileLoadQueueLow.length === 0 &&
+    surface._debug.tilesWaitingForChildren === 0;
+
+  //If not, check all of the 3D tilesets.
+  if (complete) {
+    var length = tilesets.length;
+    for (var i = 0; i < length; i++) {
+      var tileset = tilesets[i];
+      complete = tileset.ready && tileset.tilesLoaded;
+      if (!complete) {
+        break;
+      }
+    }
+  }
+
+  return complete;
 }
 
 var ipcRenderer = electron.ipcRenderer;
-ipcRenderer.on('beginCapture', beginCapture);
-ipcRenderer.on('nextFrame', nextFrame);
+ipcRenderer.on("beginCapture", beginCapture);
+ipcRenderer.on("nextFrame", nextFrame);
