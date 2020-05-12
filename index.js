@@ -9,8 +9,8 @@ app.commandLine.appendSwitch("js-flags", "--max-old-space-size=16096");
 var BrowserWindow = electron.BrowserWindow;
 var ipcMain = electron.ipcMain;
 
-var width = ((192 * 2) / 3) * 2;
-var height = ((108 * 2) / 3) * 2;
+var width = ((1920 * 2) / 3);// * 2;
+var height = ((1080 * 2) / 3);// * 2;
 var outputDirectory = "output";
 var currentFrame = 0;
 var totalFrames = 300;
@@ -53,7 +53,7 @@ app.on("ready", function () {
         .outputFPS(30)
         .noAudio()
         .videoBitrate(1024 * 20)
-        .format("avi")
+        .format("m4v")
         .on("progress", function (progress) {
           if (progress.timemark !== timemark) {
             timemark = progress.timemark;
@@ -68,7 +68,7 @@ app.on("ready", function () {
           console.log("an error happened: " + err.message);
           browserWindow.close();
         })
-        .save("movie.avi");
+        .save("movie.m4v");
     });
 
     browserWindow.webContents.send("beginCapture", {
