@@ -13,13 +13,13 @@
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
-    "cesium": "^1.63.1",
-    "electron": "^7.1.1",
+    "cesium": "^1.69.0",
+    "electron": "^8.2.5",
     "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^9.0.0"
   },
   "devDependencies": {
-    "eslint": "^6.6.0"
+    "eslint": "^7.0.0"
   },
   "scripts": {
     "start": "electron index.js",

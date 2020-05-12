@@ -9,7 +9,7 @@ var tweenCollection;
 var tilesets = [];
 
 
-  function beginCapture(event, options) {
+function beginCapture(event, options) {
   currentFrame = 0;
   totalFrames = options.totalFrames;
 
@@ -24,19 +24,23 @@ var tilesets = [];
 
   scene.camera.setView({
     destination: new Cesium.Cartesian3(
-        1333016.8260117217, -4654705.764139854, 4138050.356968003
+      1333016.8260117217,
+      -4654705.764139854,
+      4138050.356968003
     ),
     orientation: {
       heading: 1.1938950193608342,
       pitch: -0.40519439739471186,
-      roll: 0.003359818633623668
+      roll: 0.003359818633623668,
     },
   });
 
   var tween = Cesium.CameraFlightPath.createTween(scene, {
     duration: totalFrames - 1,
     destination: new Cesium.Cartesian3(
-        1334234.3970472903, -4653924.033165023, 4138472.8300507637
+      1334234.3970472903,
+      -4653924.033165023,
+      4138472.8300507637
     ),
     heading: 1.6108560792554636,
     pitch: -0.549513523795369,
@@ -51,7 +55,7 @@ var tilesets = [];
   var tileset = new Cesium.Cesium3DTileset({
     url: Cesium.IonResource.fromAssetId(14772),
   });
-  tileset.maximumScreenSpaceError = 4;
+  tileset.maximumScreenSpaceError = 16;
   viewer.scene.primitives.add(tileset);
   tilesets.push(tileset);
 

@@ -9,8 +9,8 @@ app.commandLine.appendSwitch("js-flags", "--max-old-space-size=16096");
 var BrowserWindow = electron.BrowserWindow;
 var ipcMain = electron.ipcMain;
 
-var width = ((1920 * 2) / 3) * 2;
-var height = ((1080 * 2) / 3) * 2;
+var width = ((192 * 2) / 3) * 2;
+var height = ((108 * 2) / 3) * 2;
 var outputDirectory = "output";
 var currentFrame = 0;
 var totalFrames = 300;
