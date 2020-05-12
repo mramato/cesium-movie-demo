@@ -15,7 +15,7 @@ function beginCapture(event, options) {
 
   viewer = new Cesium.CesiumWidget("cesiumContainer", {
     useDefaultRenderLoop: false,
-    //   terrainProvider: Cesium.createWorldTerrain()
+    terrainProvider: Cesium.createWorldTerrain()
   });
   viewer.useBrowserRecommendedResolution = false;
   var scene = viewer.scene;
@@ -51,11 +51,10 @@ function beginCapture(event, options) {
   tweenCollection = new Cesium.TweenCollection();
   tweenCollection.add(tween);
 
-  // Load the NYC buildings tileset
   var tileset = new Cesium.Cesium3DTileset({
-    url: Cesium.IonResource.fromAssetId(14772),
+    url: Cesium.IonResource.fromAssetId(97829),
   });
-  tileset.maximumScreenSpaceError = 16;
+  tileset.maximumScreenSpaceError = 1;
   viewer.scene.primitives.add(tileset);
   tilesets.push(tileset);
 
@@ -75,7 +74,9 @@ function nextFrame() {
 
     if (complete) {
       remove();
-      ipcRenderer.send("frameReady");
+      setTimeout(function () {
+        ipcRenderer.send("frameReady");
+      }, 0);
     } else {
       setTimeout(function () {
         viewer.resize();
@@ -94,11 +95,9 @@ function _updateSceneComplete() {
   //var entitiesComplete = viewer.clockViewModel.canAnimate;
 
   var complete =
-    surface.tileProvider.ready &&
-    surface._tileLoadQueueHigh.length === 0 &&
-    surface._tileLoadQueueMedium.length === 0 &&
-    surface._tileLoadQueueLow.length === 0 &&
-    surface._debug.tilesWaitingForChildren === 0;
+    viewer.scene.globe.tilesLoaded &&
+    surface._debug.tilesWaitingForChildren === 0 &&
+    Cesium.RequestScheduler.statistics.numberOfActiveRequests === 0;
 
   //If not, check all of the 3D tilesets.
   if (complete) {
