@@ -53,7 +53,7 @@ app.on("ready", function () {
         .outputFPS(30)
         .noAudio()
         .videoBitrate(1024 * 20)
-        .format("m4v")
+        .format("avi")
         .on("progress", function (progress) {
           if (progress.timemark !== timemark) {
             timemark = progress.timemark;
@@ -68,7 +68,7 @@ app.on("ready", function () {
           console.log("an error happened: " + err.message);
           browserWindow.close();
         })
-        .save("movie.m4v");
+        .save("movie.avi");
     });
 
     browserWindow.webContents.send("beginCapture", {
